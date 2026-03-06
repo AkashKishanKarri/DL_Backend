@@ -1,6 +1,9 @@
 import face_recognition
 import numpy as np
 
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+
 
 def get_average_embedding(image_paths):
 
