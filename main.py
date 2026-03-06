@@ -139,18 +139,19 @@ async def save_attendance(data: dict):
 @app.get("/members/{domain}")
 def get_members(domain: str):
 
+    domain = domain.lower()
+
     members = []
 
-    docs = db.collection("users").stream()
+    docs = db.collection("users").where("domain", "==", domain).get()
 
     for doc in docs:
         data = doc.to_dict()
 
-        if data.get("domain", "").lower() == domain.lower():
-            members.append({
-                "name": data.get("name"),
-                "email": data.get("email")
-            })
+        members.append({
+            "name": data.get("name"),
+            "email": data.get("email")
+        })
 
     return members
 
