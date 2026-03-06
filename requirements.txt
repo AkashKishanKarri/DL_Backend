@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+firebase-admin
+face-recognition
+numpy
+python-multipart
