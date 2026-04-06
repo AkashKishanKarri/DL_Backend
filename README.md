@@ -1,6 +1,5 @@
 ---
 title: Face Attendance Backend
-emoji: rocket
 colorFrom: blue
 colorTo: indigo
 sdk: docker
