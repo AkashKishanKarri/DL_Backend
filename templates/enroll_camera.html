@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Enrollment</title>
+</head>
+<body>
+
+<h2>AI Attendance - Camera Enrollment</h2>
+
+<p id="userInfo"></p>
+
+<video id="video" width="400" autoplay></video>
+<br><br>
+
+<button onclick="startCapture()">Start Enrollment</button>
+
+<p id="status"></p>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const uid = params.get("uid");
+const email = params.get("email");
+
+const video = document.getElementById('video');
+const statusText = document.getElementById('status');
+const userInfo = document.getElementById('userInfo');
+
+userInfo.innerText = "Enrolling face for: " + email;
+
+// Start camera
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => video.srcObject = stream)
+    .catch(err => alert("Camera access denied"));
+
+async function startCapture() {
+
+    if (!uid || !email) {
+        alert("User information missing. Please register again.");
+        return;
+    }
+
+    statusText.innerText = "Capturing images...";
+
+    let formData = new FormData();
+
+    for (let i = 0; i < 10; i++) {
+
+        await new Promise(r => setTimeout(r, 500));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+
+        const blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, 'image/jpeg')
+        );
+
+        formData.append("files", blob, `image${i}.jpg`);
+    }
+
+    fetch(`/enroll/?uid=${uid}&email=${email}`, {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        statusText.innerText = "Enrollment Successful";
+    })
+    .catch(err => {
+        statusText.innerText = "Error occurred";
+    });
+}
+
+</script>
+
+</body>
+</html>
